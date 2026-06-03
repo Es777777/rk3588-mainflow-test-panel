@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Debug Panel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;color:#ccc;font-family:sans-serif;font-size:13px}
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* top bar */
+.top{display:flex;align-items:center;padding:6px 10px;background:#111;border-bottom:1px solid #222;flex-shrink:0;gap:10px}
+.top .logo{font-size:16px;font-weight:600;color:#4ade80;letter-spacing:1px}
+.top .sub{font-size:11px;color:#667}
+.top .ver{font-size:10px;color:#445;margin-left:auto}
+.badge{padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;flex-shrink:0}
+
+/* scrollable body */
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 8px}
+
+/* global scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#444}
+
+/* card grid */
+.gr{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.box{background:#16162b;border-radius:6px;padding:8px 10px}
+.box.fw{grid-column:1/-1}
+.box h3{margin:0 0 5px 0;font-size:10px;color:#667;text-transform:uppercase;letter-spacing:1px}
+
+/* devices */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.di{font-size:11px;display:flex;align-items:center;gap:4px;padding:2px 0}
+.dt{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dt.g{background:#4ade80}
+.dt.r{background:#f87171}
+.dt.y{background:#facc15}
+
+/* switches - clickable cards */
+.sw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.sw-card{background:#1e1e3a;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;user-select:none;transition:.12s;border:1px solid transparent}
+.sw-card:active{transform:scale(.93)}
+.sw-card.on{background:#142614;border-color:#4ade8044}
+.sw-card.off{background:#222;border-color:#3335}
+.sw-card.s2-on{background:#262614;border-color:#facc1544}
+.sw-card .key{font-size:20px;font-weight:700;font-family:monospace}
+.sw-card.on .key{color:#4ade80}
+.sw-card.off .key{color:#555}
+.sw-card.s2-on .key{color:#facc15}
+.sw-card .desc{font-size:10px;color:#667;margin-top:2px}
+.sw-card .st{font-size:9px;font-weight:600;margin-top:3px;padding:1px 6px;border-radius:5px;display:inline-block}
+.sw-card.on .st{background:#4ade8033;color:#4ade80}
+.sw-card.off .st{background:#5553;color:#666}
+.sw-card.s2-on .st{background:#facc1533;color:#facc15}
+
+/* info rows */
+.ir{display:flex;gap:4px;margin-bottom:2px;font-size:12px;align-items:baseline}
+.ir:last-child{margin-bottom:0}
+.ir .l{color:#667;min-width:30px;flex-shrink:0;font-size:10px}
+
+/* detection */
+.det{background:#0a0a18;border-radius:4px;padding:5px 6px;font-family:monospace;font-size:10px;min-height:22px;overflow-x:auto}
+.det .ok{color:#4ade80}
+.det .no{color:#f87171}
+.det pre{margin:0;white-space:pre;font-size:10px}
+
+/* camera */
+.cam{background:#0a0a18;border-radius:4px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow:auto}
+.cam img{max-width:100%;display:block}
+.cam .ph{color:#444;font-size:11px}
+
+/* log */
+.log{background:#0a0a18;border-radius:4px;padding:4px 6px;height:100px;overflow:auto;font-family:monospace;font-size:10px;line-height:1.4}
+.log div{color:#777;white-space:pre}
+
+/* footer */
+.ft{text-align:center;flex-shrink:0;padding:4px;font-size:10px;color:#334;border-top:1px solid #1a1a2a}
+.ft kbd{background:#222;padding:0 4px;border-radius:2px;font-family:monospace;color:#6af;font-size:9px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <span class="logo">Debug Panel</span>
+    <span class="sub">S1/S2/S3 调试面板</span>
+    <span class="badge" :style="{background:c}" v-text="m"></span>
+    <span class="ver">v1.0</span>
+  </div>
+
+  <div class="body">
+    <div class="gr">
+      <div class="box">
+        <h3>设备自检</h3>
+        <div class="dg">
+          <div class="di" v-for="(v,n) in dev">
+            <span class="dt" :class="v.ok?'g':'r'"></span>
+            <span v-text="n" style="flex-shrink:0"></span>
+            <span style="color:#555;font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" v-text="v.detail"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>快捷键</h3>
+        <div class="ir"><span class="l" style="color:#6af">F1</span><span>切换模式</span></div>
+        <div class="ir"><span class="l" style="color:#6af">F2</span><span>语音输入（按住）</span></div>
+        <div class="ir"><span class="l" style="color:#6af">F3</span><span>重置</span></div>
+      </div>
+
+      <div class="box fw">
+        <h3>开关（点击模拟）</h3>
+        <div class="sw-grid">
+          <div class="sw-card" :class="sw.s1" @click="clickS1">
+            <div class="key">S1</div>
+            <div class="desc">模式切换</div>
+            <div class="st" v-text="sw.s1"></div>
+          </div>
+          <div class="sw-card" :class="sw.s2==='on'?'s2-on':'off'" @mousedown="pressS2" @mouseup="releaseS2" @mouseleave="releaseS2" @touchstart="pressS2" @touchend="releaseS2">
+            <div class="key">S2</div>
+            <div class="desc">语音输入</div>
+            <div class="st" v-text="sw.s2"></div>
+          </div>
+          <div class="sw-card" :class="sw.s3" @click="clickS3">
+            <div class="key">S3</div>
+            <div class="desc">重置</div>
+            <div class="st" v-text="sw.s3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>语音识别</h3>
+        <div class="ir"><span class="l">STT</span><span v-text="stt||'—'" style="word-break:break-all;font-size:11px"></span></div>
+        <div class="ir"><span class="l">目标</span><span v-text="tgt||'—'" style="font-size:11px"></span></div>
+      </div>
+
+      <div class="box">
+        <h3>视觉识别</h3>
+        <div class="det" v-if="det.target">
+          <div :class="det.found?'ok':'no'">{{det.found?'✅ 已找到':'❌ 未找到'}} {{det.target}}</div>
+          <pre v-if="det.bbox" v-text="fmt"></pre>
+        </div>
+        <div class="det" v-else><span style="color:#555">—</span></div>
+      </div>
+
+      <div class="box fw">
+        <h3>摄像头画面</h3>
+        <div class="cam">
+          <img :src="cam" v-if="cam">
+          <span class="ph" v-else>{{cok?'等待画面...':'不可用'}}</span>
+        </div>
+      </div>
+
+      <div class="box fw">
+        <h3>运行日志</h3>
+        <div class="log" ref="lb">
+          <div v-for="l in logs" v-text="l"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ft">
+    <kbd>F1</kbd> S1 &nbsp; <kbd>F2</kbd> S2 &nbsp; <kbd>F3</kbd> S3 &nbsp;·&nbsp; 点击上方卡片模拟开关
+  </div>
+</div>
+<script src="/static/vue.global.prod.js"></script>
+<script>
+const {createApp,ref,computed,onMounted}=Vue
+createApp({setup(){
+  const m=ref('—'),mi=ref(0),dev=ref({}),sw=ref({s1:'off',s2:'off',s3:'off'})
+  const stt=ref(''),tgt=ref(''),det=ref({}),logs=ref([]),cam=ref(null),cok=ref(false)
+  const c=computed(()=>['#4ade80','#facc15','#60a5fa'][mi.value]||'#555')
+  const fmt=computed(()=>{
+    const d=det.value
+    if(!d.bbox)return ''
+    return `[${d.bbox.x1},${d.bbox.y1}] [${d.bbox.x2},${d.bbox.y2}] 中:(${d.center.x},${d.center.y}) ${d.confidence}`
+  })
+  function st(){fetch('/api/status').then(r=>r.json()).then(d=>{
+    m.value=d.mode;mi.value=d.mode_index;dev.value=d.device_status.checks||{}
+    stt.value=d.stt_text;tgt.value=d.target;det.value=d.detection
+    logs.value=d.logs;cok.value=d.camera_available
+    if(d.switches)for(let k in d.switches)sw.value[k]=d.switches[k]?'on':'off'
+  }).catch(()=>{})}
+  function fc(){fetch('/api/camera_frame').then(r=>r.json()).then(d=>{if(d.frame)cam.value='data:image/jpeg;base64,'+d.frame}).catch(()=>{})}
+  function clickS1(){fetch('/api/s1',{method:'POST'})}
+  function pressS2(){fetch('/api/s2',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"press"}'})}
+  function releaseS2(){fetch('/api/s2',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"release"}'})}
+  function clickS3(){fetch('/api/s3',{method:'POST'})}
+  function k(e){
+    if(e.key==='F1'||(e.ctrlKey&&e.key==='1')){e.preventDefault();clickS1()}
+    if(e.key==='F2'||(e.ctrlKey&&e.key==='2')){e.preventDefault();e.type==='keydown'?pressS2():releaseS2()}
+    if(e.key==='F3'||(e.ctrlKey&&e.key==='3')){e.preventDefault();clickS3()}
+  }
+  onMounted(()=>{st();setInterval(st,100);setInterval(fc,100);document.addEventListener('keydown',k);document.addEventListener('keyup',k)})
+  return{m,mi,dev,sw,stt,tgt,det,logs,cam,cok,c,fmt,clickS1,pressS2,releaseS2,clickS3}
+}}).mount('#app')
+</script>
+</body>
+</html>

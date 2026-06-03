@@ -1,0 +1,19 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 5000
+  },
+  "switches": {
+    "s1_key": "F1",
+    "s2_key": "F2",
+    "s3_key": "F3"
+  },
+  "camera": {
+    "device_id": 0
+  },
+  "audio": {
+    "sample_rate": 16000,
+    "channels": 1
+  },
+  "objects_file": "app/data/objects.txt"
+}

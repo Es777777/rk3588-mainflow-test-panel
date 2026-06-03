@@ -1,0 +1,10 @@
+cup,杯子,水杯
+phone,手机
+book,书,书本
+key,钥匙
+wallet,钱包
+bottle,瓶子,水瓶
+remote,遥控器
+glasses,眼镜
+watch,手表,腕表
+bag,包,背包
