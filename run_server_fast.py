@@ -6,7 +6,8 @@ import sys
 import time
 import traceback
 
-_log_dir = '/home/l/debug_panel/runtime_outputs'
+_root_dir = os.path.dirname(__file__)
+_log_dir = os.path.join(_root_dir, 'runtime_outputs')
 os.makedirs(_log_dir, exist_ok=True)
 _fatal_log_path = os.path.join(_log_dir, 'server_fatal.log')
 _fatal_log = open(_fatal_log_path, 'a', buffering=1)

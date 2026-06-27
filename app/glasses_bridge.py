@@ -6,6 +6,8 @@ import wave
 from datetime import datetime
 from pathlib import Path
 
+from app.config import resolve_project_path
+
 
 class GlassesBridge:
     def __init__(self, config=None, log=None):
@@ -197,12 +199,12 @@ class GlassesBridge:
         base_dir = str(self._config.get('host_controller_dir', '')).strip()
         if not base_dir:
             return ''
-        path = os.path.abspath(os.path.expanduser(base_dir))
+        path = resolve_project_path(base_dir)
         return path if os.path.isdir(path) else ''
 
     def _recordings_dir(self):
         path = str(self._config.get('recordings_dir', 'runtime_outputs/glasses_recordings')).strip()
-        resolved = os.path.abspath(os.path.expanduser(path))
+        resolved = resolve_project_path(path)
         os.makedirs(resolved, exist_ok=True)
         return resolved
 

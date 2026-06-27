@@ -11,6 +11,8 @@ from urllib.parse import urlparse
 
 import requests
 
+from app.config import resolve_project_path
+
 try:
     from PIL import Image  # type: ignore[import-not-found]
 except Exception:
@@ -91,7 +93,7 @@ class RkllamaClient:
         stderr = subprocess.DEVNULL
         log_handle = None
         if self._startup_log:
-            log_path = Path(self._startup_log)
+            log_path = Path(resolve_project_path(self._startup_log))
             log_path.parent.mkdir(parents=True, exist_ok=True)
             log_handle = open(log_path, 'ab')
             stdout = log_handle
@@ -386,7 +388,7 @@ class RkllamaClient:
     def speak_via_glasses(self, glasses_bridge, text, out_dir):
         if not glasses_bridge or not glasses_bridge.available or not text.strip():
             return False
-        out_dir = Path(out_dir)
+        out_dir = Path(resolve_project_path(out_dir))
         out_dir.mkdir(parents=True, exist_ok=True)
         raw_path = out_dir / 'tts_reply.wav'
         play_path = out_dir / 'tts_reply_16k.wav'

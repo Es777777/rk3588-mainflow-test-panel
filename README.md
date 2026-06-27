@@ -1,6 +1,6 @@
 # Debug Panel — S1/S2/S3 调试面板 / RK3588 辅助抓取前端
 
-> 一个带图形界面的调试面板，支持三个开关（S1/S2/S3）的模式切换、语音输入、设备自检，并可调用桌面上的 `rk3588_u_disk_package` 输出本地 YOLO + 深度三维向量。
+> 一个带图形界面的调试面板，支持三个开关（S1/S2/S3）的模式切换、语音输入、设备自检，并集成眼镜 host controller 与 RK3588 双目向量/避障 pipeline。
 
 *(截图：启动后在浏览器或原生窗口中看到的调试面板界面)*
 
@@ -14,7 +14,8 @@
 | **S2** | `F2`（按住） | 语音输入：按住录音，松开识别 |
 | **S3** | `F3` | 重置：清空识别结果、回到第一个模式 |
 
-- 🤖 辅助抓取模式：调用 `~/桌面/rk3588_u_disk_package` 运行本地 RK3588 向量模型
+- 🤖 辅助抓取模式：调用仓库内 `integrations/rk3588_pipeline` 运行本地 RK3588 向量模型
+- 🧭 导航识别模式：读取 RK3588 避障向量并播报障碍物、距离和方向
 - 🖥️ 原生 GTK 窗口（或自动回退到浏览器）
 - 🎤 语音识别（STT）与语音合成（TTS）
 - 👁️ YOLO 目标检测与画面理解
@@ -82,6 +83,9 @@ debug_panel/
 ├── config.json              # 主程序配置文件
 ├── configs/
 │   └── rk3588_vector_bridge_fast.json   # 调用桌面 RK3588 向量运行时的桥接配置
+├── integrations/
+│   ├── glasses_host_controller/          # 眼镜 ESP32 串口、按键、录音、播放控制器
+│   └── rk3588_pipeline/                  # RK3588 双目深度、YOLO、辅助抓取/避障主流程
 ├── requirements.txt         # Python 依赖
 ├── setup.sh                 # 环境安装脚本
 ├── .gitignore
@@ -176,11 +180,18 @@ debug_panel/
   "camera": { "device_id": 0 },
   "rk3588_runtime": {
     "enabled": true,
-    "config_path": "/home/l/debug_panel/configs/rk3588_vector_bridge_fast.json"
+    "script_path": "integrations/rk3588_pipeline/python/rk3588/vector_main.py",
+    "config_path": "configs/rk3588_vector_bridge_fast.json",
+    "target_input_path": "runtime_outputs/rk3588/target_input.json"
+  },
+  "rk3588_obstacle_runtime": {
+    "enabled": true,
+    "script_path": "integrations/rk3588_pipeline/python/rk3588/obstacle_main.py",
+    "config_path": "configs/rk3588_obstacle_bridge_fast.json"
   },
   "glasses_sdk": {
     "enabled": true,
-    "host_controller_dir": "/home/l/桌面/final_glasses_sdk/host_controller",
+    "host_controller_dir": "integrations/glasses_host_controller",
     "port": "/dev/glasses_esp32",
     "baudrate": 115200,
     "auto_enter_assist_mode": true
@@ -190,24 +201,28 @@ debug_panel/
 
 ## RK3588 向量输出位置
 
-主程序默认调用桌面目录里的：
+主程序默认调用仓库内的 RK3588 pipeline 源码：
 
 ```text
-/home/l/桌面/rk3588_u_disk_package
+integrations/rk3588_pipeline/
 ```
 
-但为了方便主程序读取，桥接配置会把向量输入输出文件落到当前项目：
+RKNN 模型、相机标定和本地大模型仍按 `config.json` / `configs/*.json` 中的路径从设备本机读取，不上传到仓库。
+
+桥接配置会把向量输入输出文件落到当前项目：
 
 ```text
-/home/l/debug_panel/runtime_outputs/rk3588/
+runtime_outputs/rk3588/
+runtime_outputs/rk3588_obstacle/
 ```
 
 重点文件：
 
-- 最新滚动向量输出：`/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast_latest.jsonl`
-- 完整 JSONL 历史：`/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast.jsonl`
-- 完整 CSV 历史：`/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast.csv`
-- 主程序写给 RK3588 运行时的目标输入：`/home/l/debug_panel/runtime_outputs/rk3588/target_input.json`
+- 辅助抓取最新滚动向量输出：`runtime_outputs/rk3588/vector_output_fast_latest.jsonl`
+- 辅助抓取完整 JSONL 历史：`runtime_outputs/rk3588/vector_output_fast.jsonl`
+- 辅助抓取完整 CSV 历史：`runtime_outputs/rk3588/vector_output_fast.csv`
+- 主程序写给 RK3588 运行时的目标输入：`runtime_outputs/rk3588/target_input.json`
+- 避障最新滚动向量输出：`runtime_outputs/rk3588_obstacle/obstacle_vector_latest.jsonl`
 
 `vector_output_fast_latest.jsonl` 每行是一条 JSON 记录，主程序面板中的“辅助抓取向量”卡片读取的就是这里的最新结果。
 
@@ -216,7 +231,7 @@ debug_panel/
 当本地相机由 RK3588 运行时占用时，主程序不会持续打开 USB 摄像头，而是在初始化时抓取一张单帧预览并保存到：
 
 ```text
-/home/l/debug_panel/runtime_outputs/agent/latest_scene.jpg
+runtime_outputs/agent/latest_scene.jpg
 ```
 
 Web 端 `/api/camera_frame` 的取图顺序是：

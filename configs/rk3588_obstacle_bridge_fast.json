@@ -71,9 +71,9 @@
     "yolo_infer_interval": 4
   },
   "obstacle_output": {
-    "output_jsonl_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.jsonl",
-    "output_csv_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.csv",
-    "rolling_output_jsonl_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector_latest.jsonl",
-    "preview_image_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_preview.jpg"
+    "output_jsonl_path": "../runtime_outputs/rk3588_obstacle/obstacle_vector.jsonl",
+    "output_csv_path": "../runtime_outputs/rk3588_obstacle/obstacle_vector.csv",
+    "rolling_output_jsonl_path": "../runtime_outputs/rk3588_obstacle/obstacle_vector_latest.jsonl",
+    "preview_image_path": "../runtime_outputs/rk3588_obstacle/obstacle_preview.jpg"
   }
 }

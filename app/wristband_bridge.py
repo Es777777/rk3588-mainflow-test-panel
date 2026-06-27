@@ -3,7 +3,10 @@ import os
 import threading
 import time
 
-import serial
+try:
+    import serial
+except Exception:
+    serial = None
 
 try:
     import dbus
@@ -135,6 +138,10 @@ class WristbandBridge:
         return self._ensure_serial_connected()
 
     def _ensure_serial_connected(self):
+        if serial is None:
+            self._connected = False
+            self._last_error = 'python serial module unavailable'
+            return False
         if self._ser is not None and getattr(self._ser, 'is_open', False):
             self._connected = True
             return True

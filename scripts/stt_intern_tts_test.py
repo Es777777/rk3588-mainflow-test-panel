@@ -9,6 +9,7 @@ import requests
 
 
 API_BASE = 'http://127.0.0.1:8080/v1'
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def transcribe(audio_path, model='whisper-tiny', language='zh'):
@@ -72,7 +73,7 @@ def play_wav(path, device='plughw:4,0'):
 def main():
     parser = argparse.ArgumentParser(description='Test STT -> Intern -> TTS with local rkllama server')
     parser.add_argument('audio_path', help='Input wav file')
-    parser.add_argument('--out-dir', default='/home/l/debug_panel/runtime_outputs/dialog_test')
+    parser.add_argument('--out-dir', default=str(ROOT / 'runtime_outputs' / 'dialog_test'))
     parser.add_argument('--play', action='store_true', help='Play generated tts wav through speaker')
     parser.add_argument('--play-device', default='plughw:4,0')
     args = parser.parse_args()

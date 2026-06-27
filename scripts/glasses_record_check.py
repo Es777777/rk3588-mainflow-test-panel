@@ -5,18 +5,20 @@ import sys
 import time
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def main():
     parser = argparse.ArgumentParser(description='按下并松开 ESP32 按键2 后录音并回放')
     parser.add_argument(
         '--host-controller-dir',
-        default='/home/l/桌面/rk3588_glasses_sdk_20260605_diag/host_controller',
-        help='rk3588_glasses_sdk_20260605_diag/host_controller 路径',
+        default=str(ROOT / 'integrations' / 'glasses_host_controller'),
+        help='glasses_host_controller 路径',
     )
     parser.add_argument('--port', default='/dev/glasses_esp32')
     parser.add_argument('--baud', type=int, default=115200)
     parser.add_argument('--button', default='EXTRA', help='按键2 对应的按钮名，默认 EXTRA')
-    parser.add_argument('--out-dir', default='/home/l/debug_panel/runtime_outputs/glasses_recordings')
+    parser.add_argument('--out-dir', default=str(ROOT / 'runtime_outputs' / 'glasses_recordings'))
     args = parser.parse_args()
 
     host_dir = os.path.abspath(os.path.expanduser(args.host_controller_dir))

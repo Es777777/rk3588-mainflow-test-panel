@@ -12,8 +12,9 @@ import requests
 
 
 API_BASE = 'http://127.0.0.1:8080/v1'
-HOST_CONTROLLER_DIR = '/home/l/桌面/final_glasses_sdk/host_controller'
-RECORDINGS_DIR = Path('/home/l/debug_panel/runtime_outputs/live_voice_assistant')
+ROOT = Path(__file__).resolve().parents[1]
+HOST_CONTROLLER_DIR = str(ROOT / 'integrations' / 'glasses_host_controller')
+RECORDINGS_DIR = ROOT / 'runtime_outputs' / 'live_voice_assistant'
 
 
 def ensure_host_controller():

@@ -35,10 +35,10 @@
     "env": {
       "RKLLAMA_RKNN_CORE_MASK": "2"
     },
-    "reply_dir": "/home/l/debug_panel/runtime_outputs/voice_targeting",
+    "reply_dir": "runtime_outputs/voice_targeting",
     "autostart": true,
     "startup_timeout_s": 25,
-    "startup_log": "/home/l/debug_panel/runtime_outputs/rkllama_managed.log",
+    "startup_log": "runtime_outputs/rkllama_managed.log",
     "start_command": [
       "python3",
       "-m",
@@ -73,32 +73,32 @@
   "rk3588_runtime": {
     "enabled": true,
     "default_target_class": "cup",
-    "python_path": "/home/l/桌面/rk3588_u_disk_package/.venv-rknn/bin/python",
-    "script_path": "/home/l/桌面/rk3588_u_disk_package/python/rk3588/vector_main.py",
-    "working_dir": "/home/l/桌面/rk3588_u_disk_package",
-    "config_path": "/home/l/debug_panel/configs/rk3588_vector_bridge_fast.json",
-    "target_input_path": "/home/l/debug_panel/runtime_outputs/rk3588/target_input.json",
-    "preview_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_preview.jpg",
-    "rolling_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast_latest.jsonl",
-    "history_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast.jsonl",
-    "csv_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast.csv",
+    "python_path": "python3",
+    "script_path": "integrations/rk3588_pipeline/python/rk3588/vector_main.py",
+    "working_dir": "integrations/rk3588_pipeline",
+    "config_path": "configs/rk3588_vector_bridge_fast.json",
+    "target_input_path": "runtime_outputs/rk3588/target_input.json",
+    "preview_output_path": "runtime_outputs/rk3588/vector_preview.jpg",
+    "rolling_output_path": "runtime_outputs/rk3588/vector_output_fast_latest.jsonl",
+    "history_output_path": "runtime_outputs/rk3588/vector_output_fast.jsonl",
+    "csv_output_path": "runtime_outputs/rk3588/vector_output_fast.csv",
     "ready_timeout_s": 45
   },
   "rk3588_obstacle_runtime": {
     "enabled": true,
-    "python_path": "/home/l/桌面/rk3588_u_disk_package/.venv-rknn/bin/python",
-    "script_path": "/home/l/桌面/rk3588_u_disk_package/python/rk3588/obstacle_main.py",
-    "working_dir": "/home/l/桌面/rk3588_u_disk_package",
-    "config_path": "/home/l/debug_panel/configs/rk3588_obstacle_bridge_fast.json",
-    "rolling_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector_latest.jsonl",
-    "history_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.jsonl",
-    "csv_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.csv",
-    "preview_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_preview.jpg",
+    "python_path": "python3",
+    "script_path": "integrations/rk3588_pipeline/python/rk3588/obstacle_main.py",
+    "working_dir": "integrations/rk3588_pipeline",
+    "config_path": "configs/rk3588_obstacle_bridge_fast.json",
+    "rolling_output_path": "runtime_outputs/rk3588_obstacle/obstacle_vector_latest.jsonl",
+    "history_output_path": "runtime_outputs/rk3588_obstacle/obstacle_vector.jsonl",
+    "csv_output_path": "runtime_outputs/rk3588_obstacle/obstacle_vector.csv",
+    "preview_output_path": "runtime_outputs/rk3588_obstacle/obstacle_preview.jpg",
     "ready_timeout_s": 45
   },
   "glasses_sdk": {
     "enabled": true,
-    "host_controller_dir": "/home/l/桌面/final_glasses_sdk/host_controller",
+    "host_controller_dir": "integrations/glasses_host_controller",
     "port": "/dev/glasses_esp32",
     "baudrate": 921600,
     "play_chunk_delay_s": 0.018,
@@ -106,7 +106,7 @@
     "reconnect": true,
     "button_name": "TALK",
     "auto_enter_assist_mode": true,
-    "recordings_dir": "/home/l/debug_panel/runtime_outputs/glasses_recordings"
+    "recordings_dir": "runtime_outputs/glasses_recordings"
   },
   "wristband": {
     "enabled": true,

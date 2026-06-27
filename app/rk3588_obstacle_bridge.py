@@ -1,8 +1,11 @@
 import json
 import os
+import shutil
 import subprocess
 import threading
 import time
+
+from app.config import resolve_project_path
 
 
 class RK3588ObstacleBridge:
@@ -54,9 +57,15 @@ class RK3588ObstacleBridge:
 
     def check(self):
         script_path = self._abs_path(self._config.get('script_path', ''))
-        python_path = self._abs_path(self._config.get('python_path', ''))
         config_path = self._abs_path(self._config.get('config_path', ''))
-        return all(os.path.exists(path) for path in (script_path, python_path, config_path))
+        python_path = self._resolve_executable(self._config.get('python_path', ''))
+        return bool(
+            script_path
+            and os.path.exists(script_path)
+            and config_path
+            and os.path.exists(config_path)
+            and python_path
+        )
 
     def start(self):
         with self._proc_lock:
@@ -74,7 +83,7 @@ class RK3588ObstacleBridge:
             env = os.environ.copy()
             env['PYTHONUNBUFFERED'] = '1'
             cmd = [
-                self._abs_path(self._config.get('python_path', '')),
+                self._resolve_executable(self._config.get('python_path', '')),
                 self._abs_path(self._config.get('script_path', '')),
                 '--config',
                 self._abs_path(self._config.get('config_path', '')),
@@ -194,7 +203,16 @@ class RK3588ObstacleBridge:
     def _abs_path(self, path):
         if not path:
             return ''
-        return os.path.abspath(os.path.expanduser(str(path)))
+        return resolve_project_path(path)
+
+    def _resolve_executable(self, path):
+        if not path:
+            return ''
+        value = os.path.expanduser(str(path))
+        if os.path.isabs(value) or os.sep in value or (os.altsep and os.altsep in value):
+            resolved = resolve_project_path(value)
+            return resolved if os.path.exists(resolved) else ''
+        return shutil.which(value) or value
 
     def _prepare_output_paths(self):
         for path in (self.rolling_output_path, self.history_output_path, self.csv_output_path, self.preview_output_path):

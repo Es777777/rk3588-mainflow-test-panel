@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
-from app.config import load_config
+from app.config import load_config, resolve_project_path
 from app.device_check import run_all as check_all_devices, set_camera_state
 from app.audio.stt import STT
 from app.audio.tts import TTS
@@ -64,7 +64,7 @@ class AppState:
     def __init__(self):
         self.config = load_config()
         self.logs = []
-        self._events_log_path = Path('/home/l/debug_panel/runtime_outputs/app_events.log')
+        self._events_log_path = Path(resolve_project_path('runtime_outputs/app_events.log'))
         self._events_log_path.parent.mkdir(parents=True, exist_ok=True)
         self._startup_ts = time.time()
         self._accept_glasses_buttons = False
@@ -247,7 +247,7 @@ class AppState:
             return False
         try:
             if self.rkllama and self.glasses and self.glasses.connected:
-                reply_dir = self.config.get('rkllama', {}).get('reply_dir', '/home/l/debug_panel/runtime_outputs/voice_targeting')
+                reply_dir = self.config.get('rkllama', {}).get('reply_dir', 'runtime_outputs/voice_targeting')
                 spoke = self.run_with_rkllama(
                     '语音播报',
                     lambda: (
@@ -586,7 +586,7 @@ class AppState:
 
     def capture_agent_snapshot(self, crop_left=False):
         frame = self.camera.get_frame_raw() if self.camera else None
-        out_dir = Path('/home/l/debug_panel/runtime_outputs/agent')
+        out_dir = Path(resolve_project_path('runtime_outputs/agent'))
         out_dir.mkdir(parents=True, exist_ok=True)
         path = out_dir / 'latest_scene.jpg'
         if frame is None and self.camera:
@@ -611,7 +611,6 @@ class AppState:
             str(path),
             self.rk3588.preview_output_path if self.rk3588 else '',
             self.rk3588_obstacle.preview_output_path if self.rk3588_obstacle else '',
-            '/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_preview.jpg',
         ]
         for candidate in preview_candidates:
             if candidate and os.path.exists(candidate) and candidate.lower().endswith(('.jpg', '.jpeg', '.png')):
@@ -627,9 +626,8 @@ class AppState:
             self.capture_agent_snapshot(crop_left=False),
             self.rk3588.preview_output_path if self.rk3588 else '',
             self.rk3588_obstacle.preview_output_path if self.rk3588_obstacle else '',
-            '/home/l/debug_panel/runtime_outputs/agent/latest_scene.jpg',
-            '/home/l/debug_panel/runtime_outputs/rk3588/vector_preview.jpg',
-            '/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_preview.jpg',
+            resolve_project_path('runtime_outputs/agent/latest_scene.jpg'),
+            resolve_project_path('runtime_outputs/rk3588/vector_preview.jpg'),
         ]
         for candidate in candidates:
             if candidate and os.path.exists(candidate):
@@ -1286,7 +1284,7 @@ class AppState:
             self.speak_text('已重置')
 
     def _cleanup_old_files(self):
-        base = Path('/home/l/debug_panel/runtime_outputs')
+        base = Path(resolve_project_path('runtime_outputs'))
         max_age = 300
         now = time.time()
         for root, dirs, files in os.walk(base):

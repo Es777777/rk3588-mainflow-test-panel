@@ -24,11 +24,11 @@ def test_obstacle_speech():
     state = build_state()
     obstacle = {'label': 'person', 'distance_m': 0.86, 'vector_x_m': -0.12, 'vector_z_m': 0.84}
     speech = state._build_obstacle_speech(obstacle)
-    assert speech == '左前方有行人，距离0.86米', speech
+    assert speech == '左前方有行人，距离零点八六米', speech
 
     obstacle = {'label': 'stairs', 'distance_m': 1.43, 'vector_x_m': 0.02, 'vector_z_m': 1.43}
     speech = state._build_obstacle_speech(obstacle)
-    assert speech == '正前方有台阶，距离1.43米', speech
+    assert speech == '正前方有台阶，距离一点四三米', speech
 
 
 def test_wristband_packets():

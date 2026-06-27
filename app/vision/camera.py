@@ -4,7 +4,7 @@ import re
 import threading
 import base64
 import time
-from app.config import get_config
+from app.config import get_config, resolve_project_path
 
 
 _V4L2_DEV_RE = re.compile(r'^video(\d+)$')
@@ -319,7 +319,7 @@ class Camera:
         ret, frame = cap.read()
         if ret and frame is not None:
             from pathlib import Path
-            out_dir = Path('/home/l/debug_panel/runtime_outputs/agent')
+            out_dir = Path(resolve_project_path('runtime_outputs/agent'))
             out_dir.mkdir(parents=True, exist_ok=True)
             path = out_dir / 'latest_scene.jpg'
             cv2.imwrite(str(path), frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
