@@ -1,0 +1,79 @@
+{
+  "capture": {
+    "device_index": 1,
+    "device_path": "/dev/v4l/by-id/usb-DCX250115_K_PC_CAMERA_TB2_01.00.00-video-index0",
+    "api": "v4l2",
+    "pixel_format": "MJPG",
+    "buffer_size": 1,
+    "frame_width": 2560,
+    "frame_height": 720,
+    "fps": 30,
+    "layout": "left_right",
+    "split_overlap_px": 0
+  },
+  "model": {
+    "path": "/home/l/桌面/rk3588_u_disk_package/models/rknn/lightstereo_s_320x576.rknn",
+    "input_width": 576,
+    "input_height": 320,
+    "input_names": ["left_img", "right_img"],
+    "output_name": "disp_pred",
+    "input_format": "nchw",
+    "preprocess_mode": "resize",
+    "max_disp": 192,
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225],
+    "npu_core_mask": "0_1_2"
+  },
+  "target_model": {
+    "path": "/home/l/桌面/rk3588_u_disk_package/models/rknn/yolo11s_ood_best_20260624.rknn",
+    "task": "detect",
+    "class_names": [
+      "bench", "bicycle", "bus", "bus_stop", "cane",
+      "car", "curb", "dog", "fire_hydrant", "motorcycle",
+      "person", "pole", "spherical_roadblock", "stairs", "stop_sign",
+      "street_light", "traffic_light", "train", "tree", "truck",
+      "warning_column", "waste_container"
+    ],
+    "input_width": 640,
+    "input_height": 640,
+    "conf_threshold": 0.15,
+    "iou_threshold": 0.45,
+    "max_detections": 50,
+    "npu_core_mask": "0_1_2"
+  },
+  "rectify": {
+    "enabled": true,
+    "calibration_path": "/home/l/桌面/rk3588_u_disk_package/configs/camera/stereo_vision_calibration.json"
+  },
+  "depth": {
+    "enabled": true,
+    "baseline_m": 0.06424,
+    "focal_px": 616.15,
+    "max_depth_m": 5.0,
+    "min_valid_disp": 0.1
+  },
+  "display": {
+    "window_name": "RK3588 Obstacle Fast",
+    "show_preview": false,
+    "show_depth": false,
+    "colormap": "turbo",
+    "preview_scale": 1.0,
+    "fixed_disparity_max": 256.0,
+    "depth_color_min_m": 0.3,
+    "depth_color_max_m": 2.5
+  },
+  "runtime": {
+    "capture_timeout_ms": 1000,
+    "warmup_frames": 10,
+    "print_every_n_frames": 10,
+    "temporal_smoothing_alpha": 0.2,
+    "median_blur_ksize": 1,
+    "yolo_infer_interval": 4
+  },
+  "obstacle_output": {
+    "output_jsonl_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.jsonl",
+    "output_csv_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.csv",
+    "rolling_output_jsonl_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector_latest.jsonl",
+    "preview_image_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_preview.jpg"
+  }
+}

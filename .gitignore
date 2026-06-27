@@ -12,3 +12,19 @@ dist/
 *~
 .DS_Store
 Thumbs.db
+
+# model files
+*.onnx
+*.pt
+
+# runtime outputs
+runtime_outputs/
+
+# agents config
+.agents/
+
+# static deps
+static/vue.global.prod.js
+
+# icons
+icon.png

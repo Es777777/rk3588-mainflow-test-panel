@@ -108,6 +108,8 @@ body{background:#0d0d1a;color:#ccc;font-family:sans-serif;font-size:13px}
         <div class="ir"><span class="l" style="color:#6af">F1</span><span>切换模式</span></div>
         <div class="ir"><span class="l" style="color:#6af">F2</span><span>语音输入（按住）</span></div>
         <div class="ir"><span class="l" style="color:#6af">F3</span><span>重置</span></div>
+        <div class="ir"><span class="l" style="color:#a6a">模式</span><span v-text="modeSeq||'—'" style="font-size:10px;color:#667;word-break:break-all"></span></div>
+        <div class="ir" v-if="aSnk"><span class="l" style="color:#a6a">音频</span><span style="font-size:10px;color:#667;word-break:break-all" v-text="aSnk"></span></div>
       </div>
 
       <div class="box fw">
@@ -146,12 +148,95 @@ body{background:#0d0d1a;color:#ccc;font-family:sans-serif;font-size:13px}
         <div class="det" v-else><span style="color:#555">—</span></div>
       </div>
 
+      <div class="box">
+        <h3>辅助抓取向量</h3>
+        <div class="ir"><span class="l">状态</span><span v-text="vec.status||'—'"></span></div>
+        <div class="ir"><span class="l">距离</span><span v-text="vec.distance_m!=null?vec.distance_m+' m':'—'"></span></div>
+        <div class="det" v-if="vec.vector_active">
+          <pre v-text="vecText"></pre>
+        </div>
+        <div class="det" v-else><span style="color:#555">等待有效向量输出</span></div>
+      </div>
+
+      <div class="box">
+        <h3>避障向量</h3>
+        <div class="ir"><span class="l">状态</span><span v-text="obvec.status||'—'"></span></div>
+        <div class="ir"><span class="l">类别</span><span v-text="obvec.obstacle_class_name||'—'"></span></div>
+        <div class="ir"><span class="l">距离</span><span v-text="obvec.distance_m!=null?obvec.distance_m+' m':'—'"></span></div>
+        <div class="det" v-if="obvec.obstacle_class_name">
+          <pre v-text="obText"></pre>
+        </div>
+        <div class="det" v-else><span style="color:#555">等待避障输出</span></div>
+      </div>
+
       <div class="box fw">
         <h3>摄像头画面</h3>
         <div class="cam">
           <img :src="cam" v-if="cam">
           <span class="ph" v-else>{{cok?'等待画面...':'不可用'}}</span>
         </div>
+      </div>
+
+      <div class="box fw">
+        <h3>实时检测预览</h3>
+        <div class="cam">
+          <img :src="obcam" v-if="obcam">
+          <span class="ph" v-else>等待实时检测画面...</span>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>TTS 测试</h3>
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          <input v-model="ttsText" @keydown.enter="speakTTS" placeholder="输入文字，回车或点朗读" style="flex:1;background:#0a0a18;border:1px solid #222;border-radius:4px;padding:4px 6px;color:#ccc;font-size:12px;outline:none">
+          <button @click="speakTTS" :disabled="!tavail" style="background:#2a5;border:none;border-radius:4px;padding:4px 10px;color:#fff;font-size:11px;cursor:pointer;opacity:1" :style="{opacity:tavail?1:.4}">朗读</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:10px;color:#667;flex-shrink:0">音量</span>
+          <input type="range" min="0" max="100" v-model.number="vol" @input="setVol" style="flex:1;height:4px;accent-color:#4ade80">
+          <span style="font-size:10px;color:#aaa;min-width:24px;text-align:right" v-text="vol+'%'"></span>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>RK3588 运行时</h3>
+        <div class="ir"><span class="l">状态</span><span v-text="rk.ready?'已就绪':(rk.running?'启动中':'未运行')"></span></div>
+        <div class="ir"><span class="l">眼镜</span><span v-text="glassesState"></span></div>
+        <div class="ir"><span class="l">输出</span><span style="font-size:10px;color:#667;word-break:break-all" v-text="rk.rolling_output_path||'—'"></span></div>
+      </div>
+
+      <div class="box">
+        <h3>避障运行时</h3>
+        <div class="ir"><span class="l">状态</span><span v-text="rkObs.ready?'已就绪':(rkObs.running?'启动中':'未运行')"></span></div>
+        <div class="ir"><span class="l">输出</span><span style="font-size:10px;color:#667;word-break:break-all" v-text="rkObs.rolling_output_path||'—'"></span></div>
+        <div class="ir"><span class="l">预览</span><span style="font-size:10px;color:#667;word-break:break-all" v-text="rkObs.preview_output_path||'—'"></span></div>
+      </div>
+
+      <div class="box">
+        <h3>相机诊断</h3>
+        <div class="ir"><span class="l">来源</span><span v-text="camDiag.active_source||'—'" style="font-size:10px;color:#667;word-break:break-all"></span></div>
+        <div class="ir"><span class="l">格式</span><span v-text="camDiag.pixel_format||'—'"></span></div>
+        <div class="ir"><span class="l">尺寸</span><span v-text="camSizeText"></span></div>
+        <div class="ir"><span class="l">帧率</span><span v-text="camFpsText"></span></div>
+        <div class="ir"><span class="l">缓冲</span><span v-text="camDiag.buffer_size!=null?camDiag.buffer_size:'—'"></span></div>
+      </div>
+
+      <div class="box fw">
+        <h3>本地 Agent</h3>
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          <input v-model="agentText" @keydown.enter="runAgent" placeholder="输入一句话，让本地 agent 结合当前画面分析" style="flex:1;background:#0a0a18;border:1px solid #222;border-radius:4px;padding:4px 6px;color:#ccc;font-size:12px;outline:none">
+          <button @click="runAgent" style="background:#2c6;border:none;border-radius:4px;padding:4px 10px;color:#fff;font-size:11px;cursor:pointer">分析</button>
+        </div>
+        <div class="ir"><span class="l">意图</span><span v-text="agent.intent||'—'"></span></div>
+        <div class="ir"><span class="l">目标</span><span v-text="agent.target_object||'—'"></span></div>
+        <div class="ir"><span class="l">挂起</span><span v-text="agentStat.pending_intent||'—'"></span></div>
+        <div class="ir"><span class="l">待切换</span><span v-text="agentStat.pending_mode_name||'—'"></span></div>
+        <div class="ir"><span class="l">连续任务</span><span v-text="taskCtxText||'—'" style="word-break:break-all"></span></div>
+        <div class="ir"><span class="l">视觉源</span><span v-text="agentStat.visual_source||'—'" style="font-size:10px;color:#667;word-break:break-all"></span></div>
+        <div class="ir"><span class="l">摘要</span><span v-text="agentStat.visual_summary||'—'" style="font-size:10px;color:#667;word-break:break-all"></span></div>
+        <div class="ir"><span class="l">播报</span><span v-text="agent.speak_text||'—'" style="word-break:break-all"></span></div>
+        <div class="det"><pre v-text="agentRuntimeView"></pre></div>
+        <div class="det"><pre v-text="agentTextView"></pre></div>
       </div>
 
       <div class="box fw">
@@ -172,31 +257,86 @@ body{background:#0d0d1a;color:#ccc;font-family:sans-serif;font-size:13px}
 const {createApp,ref,computed,onMounted}=Vue
 createApp({setup(){
   const m=ref('—'),mi=ref(0),dev=ref({}),sw=ref({s1:'off',s2:'off',s3:'off'})
-  const stt=ref(''),tgt=ref(''),det=ref({}),logs=ref([]),cam=ref(null),cok=ref(false)
-  const c=computed(()=>['#4ade80','#facc15','#60a5fa'][mi.value]||'#555')
+  const stt=ref(''),tgt=ref(''),det=ref({}),logs=ref([]),cam=ref(null),cok=ref(false),tavail=ref(false),ttsText=ref(''),vol=ref(100),aSnk=ref('')
+  const vec=ref({}),obvec=ref({}),rk=ref({}),rkObs=ref({}),glasses=ref({}),obcam=ref(null)
+  const agent=ref({}),agentText=ref(''),agentStat=ref({}),modeNames=ref([])
+  const camDiag=ref({})
+  const c=computed(()=>['#fb7185','#4ade80','#facc15','#60a5fa'][mi.value]||'#555')
+  const modeSeq=computed(()=>Array.isArray(modeNames.value)&&modeNames.value.length?modeNames.value.join(' -> '):'')
   const fmt=computed(()=>{
     const d=det.value
     if(!d.bbox)return ''
     return `[${d.bbox.x1},${d.bbox.y1}] [${d.bbox.x2},${d.bbox.y2}] 中:(${d.center.x},${d.center.y}) ${d.confidence}`
   })
-  function st(){fetch('/api/status').then(r=>r.json()).then(d=>{
+  const vecText=computed(()=>{
+    const v=vec.value||{}
+    if(!v.vector_active)return ''
+    return `hand=(${v.hand_x_m}, ${v.hand_y_m}, ${v.hand_z_m})\ntarget=(${v.target_x_m}, ${v.target_y_m}, ${v.target_z_m})\nvector=(${v.vector_x_m}, ${v.vector_y_m}, ${v.vector_z_m})`
+  })
+  const obText=computed(()=>{
+    const v=obvec.value||{}
+    if(!v || !v.obstacle_class_name)return ''
+    return `obstacle=${v.obstacle_class_name}\nvector=(${v.vector_x_m}, ${v.vector_z_m})\ndistance=${v.distance_m} m`
+  })
+  const agentTextView=computed(()=>{
+    const a=agent.value||{}
+    return `scene=${a.scene_summary||''}\nreason=${a.reason||''}\nconfidence=${a.confidence!=null?a.confidence:'—'}\nraw=${a.raw_reply||''}`
+  })
+  const taskCtxText=computed(()=>{
+    const t=(agentStat.value||{}).task_context||{}
+    if(!t.target_object && !t.intent)return ''
+    return `${t.intent||'—'} / ${t.mode_name||'—'} / ${t.target_object||'—'}`
+  })
+  const glassesState=computed(()=>{
+    const g=glasses.value||{}
+    if(!g.enabled)return '未启用'
+    if(!g.connected)return '未连接'
+    if(g.waiting_for_press)return g.port||'等待按钮'
+    return (g.port||'已连接') + ' / 已接管'
+  })
+  const camSizeText=computed(()=>camDiag.value.width&&camDiag.value.height?`${camDiag.value.width}x${camDiag.value.height}`:'—')
+  const camFpsText=computed(()=>camDiag.value.fps?`${camDiag.value.fps} fps`:'—')
+  const agentRuntimeView=computed(()=>{
+    const s=agentStat.value||{}
+    const r=s.runtime_context||{}
+    const v=r.vector_state||{}
+    const o=r.obstacle_state||{}
+    const d=r.last_detection||{}
+    return `mode=${r.mode_name||''} idx=${r.mode_index!=null?r.mode_index:'—'} target=${r.current_target||'—'}\n`
+      + `camera=${r.camera_available?'on':'off'} source=${r.camera_source||'—'} yolo=${r.yolo_available?'on':'off'}\n`
+      + `vision_summary=${r.visual_summary||'—'} via=${r.visual_summary_source||'—'}\n`
+      + `assist=running:${v.running?'1':'0'} ready:${v.ready?'1':'0'} dist:${v.distance_m!=null?v.distance_m:'—'}\n`
+      + `obstacle=running:${o.running?'1':'0'} ready:${o.ready?'1':'0'} class:${o.obstacle_class_name||'—'} dist:${o.distance_m!=null?o.distance_m:'—'}\n`
+      + `last_det=${d.target||d.label||'—'} found=${d.found!=null?d.found:'—'}`
+  })
+  let stBusy=false,fcBusy=false,foBusy=false
+  function st(){if(stBusy)return;stBusy=true;fetch('/api/status').then(r=>r.json()).then(d=>{
     m.value=d.mode;mi.value=d.mode_index;dev.value=d.device_status.checks||{}
     stt.value=d.stt_text;tgt.value=d.target;det.value=d.detection
-    logs.value=d.logs;cok.value=d.camera_available
+    logs.value=d.logs;cok.value=d.camera_available;tavail.value=d.tts_available;aSnk.value=d.audio_sink||''
+    camDiag.value=d.camera_diagnostics||{}
+    vec.value=d.vector_payload||{};obvec.value=d.obstacle_payload||{};rk.value=d.rk3588||{};rkObs.value=d.rk3588_obstacle||{};glasses.value=d.glasses||{}
+    agent.value=d.agent_result||{}
+    agentStat.value=d.agent_status||{}
+    modeNames.value=d.mode_names||[]
     if(d.switches)for(let k in d.switches)sw.value[k]=d.switches[k]?'on':'off'
-  }).catch(()=>{})}
-  function fc(){fetch('/api/camera_frame').then(r=>r.json()).then(d=>{if(d.frame)cam.value='data:image/jpeg;base64,'+d.frame}).catch(()=>{})}
+  }).catch(()=>{}).finally(()=>{stBusy=false})}
+  function fc(){if(fcBusy)return;fcBusy=true;fetch('/api/camera_frame').then(r=>r.json()).then(d=>{cam.value=d.frame?('data:image/jpeg;base64,'+d.frame):null}).catch(()=>{cam.value=null}).finally(()=>{fcBusy=false})}
+  function fo(){if(foBusy)return;foBusy=true;fetch('/api/obstacle_preview').then(r=>r.json()).then(d=>{obcam.value=d.frame?('data:image/jpeg;base64,'+d.frame):null}).catch(()=>{obcam.value=null}).finally(()=>{foBusy=false})}
   function clickS1(){fetch('/api/s1',{method:'POST'})}
   function pressS2(){fetch('/api/s2',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"press"}'})}
   function releaseS2(){fetch('/api/s2',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"release"}'})}
   function clickS3(){fetch('/api/s3',{method:'POST'})}
+  function speakTTS(){if(!ttsText.value.trim())return;fetch('/api/tts_speak',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:ttsText.value.trim()})});ttsText.value=''}
+  function runAgent(){if(!agentText.value.trim())return;fetch('/api/agent_test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:agentText.value.trim()})}).then(r=>r.json()).then(d=>{if(d.result)agent.value=d.result}).catch(()=>{})}
+  function setVol(){fetch('/api/set_volume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({volume:vol.value})})}
   function k(e){
     if(e.key==='F1'||(e.ctrlKey&&e.key==='1')){e.preventDefault();clickS1()}
     if(e.key==='F2'||(e.ctrlKey&&e.key==='2')){e.preventDefault();e.type==='keydown'?pressS2():releaseS2()}
     if(e.key==='F3'||(e.ctrlKey&&e.key==='3')){e.preventDefault();clickS3()}
   }
-  onMounted(()=>{st();setInterval(st,100);setInterval(fc,100);document.addEventListener('keydown',k);document.addEventListener('keyup',k)})
-  return{m,mi,dev,sw,stt,tgt,det,logs,cam,cok,c,fmt,clickS1,pressS2,releaseS2,clickS3}
+  onMounted(()=>{st();fc();fo();setInterval(st,500);setInterval(fc,100);setInterval(fo,200);document.addEventListener('keydown',k);document.addEventListener('keyup',k)})
+  return{m,mi,dev,sw,stt,tgt,det,logs,cam,cok,c,fmt,clickS1,pressS2,releaseS2,clickS3,speakTTS,tavail,ttsText,vol,setVol,vec,vecText,obvec,obText,rk,rkObs,glasses,glassesState,obcam,agent,agentText,agentTextView,agentRuntimeView,agentStat,taskCtxText,modeNames,modeSeq,runAgent,camDiag,camSizeText,camFpsText}
 }}).mount('#app')
 </script>
 </body>

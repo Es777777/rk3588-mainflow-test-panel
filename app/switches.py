@@ -15,6 +15,7 @@ class SwitchManager:
         self.s1_state = True
         if self._on_s1:
             self._on_s1()
+        self.s1_state = False
 
     def press_s2(self):
         self.s2_state = True
@@ -27,9 +28,10 @@ class SwitchManager:
             self._on_s2_off()
 
     def press_s3(self):
-        self.s3_state = not self.s3_state
+        self.s3_state = True
         if self._on_s3:
             self._on_s3()
+        self.s3_state = False
 
     def get_states(self):
         return {

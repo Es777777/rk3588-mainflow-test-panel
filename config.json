@@ -9,11 +9,117 @@
     "s3_key": "F3"
   },
   "camera": {
-    "device_id": 0
+    "device_path": "/dev/v4l/by-id/usb-DCX250115_K_PC_CAMERA_TB2_01.00.00-video-index0",
+    "device_id": 1,
+    "api": "v4l2",
+    "pixel_format": "MJPG",
+    "buffer_size": 1,
+    "frame_width": 2560,
+    "frame_height": 720,
+    "fps": 30,
+    "retry_interval_s": 3
   },
   "audio": {
     "sample_rate": 16000,
     "channels": 1
   },
-  "objects_file": "app/data/objects.txt"
+  "rkllama": {
+    "api_base": "http://127.0.0.1:8080/v1",
+    "stt_model": "whisper-tiny",
+    "tts_model": "zh_CN-huayan-medium",
+    "chat_model": "internvl3.5-1b",
+    "text_timeout_s": 90,
+    "vision_timeout_s": 18,
+    "text_attempts": 2,
+    "vision_attempts": 2,
+    "env": {
+      "RKLLAMA_RKNN_CORE_MASK": "2"
+    },
+    "reply_dir": "/home/l/debug_panel/runtime_outputs/voice_targeting",
+    "autostart": true,
+    "startup_timeout_s": 25,
+    "startup_log": "/home/l/debug_panel/runtime_outputs/rkllama_managed.log",
+    "start_command": [
+      "python3",
+      "-m",
+      "rkllama.server.server",
+      "--processor",
+      "rk3588",
+      "--port",
+      "8080",
+      "--models",
+      "/home/l/桌面/local_llm/rkllama_work/models"
+    ]
+  },
+  "cloud_vision": {
+    "enabled": true,
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "api_key_env": "DASHSCOPE_API_KEY",
+    "api_key_file": "/home/l/.config/debug_panel/dashscope_api_key",
+    "model": "qwen-vl-plus",
+    "timeout_s": 40,
+    "temperature": 0.2,
+    "max_tokens": 160
+  },
+  "voice_assistant": {
+    "vision_backend": "api"
+  },
+  "npu_policy": {
+    "pause_drain_s": 0.6,
+    "resume_delay_s": 0.3,
+    "stop_timeout_s": 3.0
+  },
+  "objects_file": "app/data/objects.txt",
+  "rk3588_runtime": {
+    "enabled": true,
+    "default_target_class": "cup",
+    "python_path": "/home/l/桌面/rk3588_u_disk_package/.venv-rknn/bin/python",
+    "script_path": "/home/l/桌面/rk3588_u_disk_package/python/rk3588/vector_main.py",
+    "working_dir": "/home/l/桌面/rk3588_u_disk_package",
+    "config_path": "/home/l/debug_panel/configs/rk3588_vector_bridge_fast.json",
+    "target_input_path": "/home/l/debug_panel/runtime_outputs/rk3588/target_input.json",
+    "preview_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_preview.jpg",
+    "rolling_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast_latest.jsonl",
+    "history_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast.jsonl",
+    "csv_output_path": "/home/l/debug_panel/runtime_outputs/rk3588/vector_output_fast.csv",
+    "ready_timeout_s": 45
+  },
+  "rk3588_obstacle_runtime": {
+    "enabled": true,
+    "python_path": "/home/l/桌面/rk3588_u_disk_package/.venv-rknn/bin/python",
+    "script_path": "/home/l/桌面/rk3588_u_disk_package/python/rk3588/obstacle_main.py",
+    "working_dir": "/home/l/桌面/rk3588_u_disk_package",
+    "config_path": "/home/l/debug_panel/configs/rk3588_obstacle_bridge_fast.json",
+    "rolling_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector_latest.jsonl",
+    "history_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.jsonl",
+    "csv_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_vector.csv",
+    "preview_output_path": "/home/l/桌面/rk3588_u_disk_package/outputs/obstacle_mode/obstacle_preview.jpg",
+    "ready_timeout_s": 45
+  },
+  "glasses_sdk": {
+    "enabled": true,
+    "host_controller_dir": "/home/l/桌面/final_glasses_sdk/host_controller",
+    "port": "/dev/glasses_esp32",
+    "baudrate": 921600,
+    "play_chunk_delay_s": 0.018,
+    "play_start_delay_s": 0.1,
+    "reconnect": true,
+    "button_name": "TALK",
+    "auto_enter_assist_mode": true,
+    "recordings_dir": "/home/l/debug_panel/runtime_outputs/glasses_recordings"
+  },
+  "wristband": {
+    "enabled": true,
+    "transport": "ble",
+    "port": "/dev/rfcomm0",
+    "ble_address": "12:34:59:7D:99:16",
+    "ble_service_uuid": "0000ffe0-0000-1000-8000-00805f9b34fb",
+    "ble_characteristic_uuid": "0000ffe1-0000-1000-8000-00805f9b34fb",
+    "ble_chunk_size": 20,
+    "ble_chunk_delay_s": 0.03,
+    "ble_write_type": "request",
+    "baudrate": 9600,
+    "send_hz": 1.0,
+    "reconnect_interval_s": 2.0
+  }
 }

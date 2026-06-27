@@ -1,4 +1,6 @@
 import cv2
+import os
+import re
 import socket
 import subprocess
 import shutil
@@ -8,12 +10,23 @@ import threading
 from app.config import get_config
 
 
-def _check_camera():
+_V4L2_DEV_RE = re.compile(r'^video(\d+)$')
+_camera_shared_state = None
+
+
+def set_camera_state(state):
+    global _camera_shared_state
+    _camera_shared_state = state
+
+
+def _probe_camera():
     cfg = get_config()
-    dev = cfg.get('camera', {}).get('device_id', 0)
+    dev = cfg.get('camera', {}).get('device_path', 0)
+    if not dev or not os.path.exists(str(dev)):
+        dev = cfg.get('camera', {}).get('device_id', 0)
     result = [False]
     def _try():
-        cap = cv2.VideoCapture(dev)
+        cap = cv2.VideoCapture(dev, cv2.CAP_V4L2)
         if cap.isOpened():
             ret, frame = cap.read()
             cap.release()
@@ -22,7 +35,15 @@ def _check_camera():
     t = threading.Thread(target=_try, daemon=True)
     t.start()
     t.join(timeout=3)
-    ok = result[0]
+    return result[0]
+
+def _check_camera():
+    if _camera_shared_state is not None:
+        ok = _camera_shared_state.available
+        if not ok:
+            ok = _probe_camera()
+        return {'ok': ok, 'detail': '摄像头正常' if ok else '未检测到摄像头'}
+    ok = _probe_camera()
     return {'ok': ok, 'detail': '摄像头正常' if ok else '未检测到摄像头'}
 
 
@@ -39,8 +60,9 @@ def _check_microphone():
     if shutil.which('arecord'):
         try:
             tmp = tempfile.mktemp(suffix='.wav')
-            r = subprocess.run(['arecord', '-d', '1', '-q', tmp], timeout=3, stderr=subprocess.DEVNULL)
-            ok = r.returncode == 0
+            r = subprocess.run(['arecord', '-D', 'plughw:4,0', '-d', '1', '-f', 'S16_LE', '-c', '2', '-r', '16000', tmp],
+                               timeout=3, stderr=subprocess.DEVNULL)
+            ok = r.returncode == 0 and os.path.getsize(tmp) > 44
             return {'ok': ok, 'detail': '麦克风正常' if ok else '麦克风无响应'}
         except Exception:
             pass

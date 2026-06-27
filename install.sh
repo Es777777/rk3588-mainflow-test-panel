@@ -40,9 +40,14 @@ mkdir -p "$HOME/.local/share/applications"
 cp "$DESKTOP_FILE" "$HOME/.local/share/applications/debug-panel.desktop"
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
+# 安装桌面会话自启动
+mkdir -p "$HOME/.config/autostart"
+cp "$DESKTOP_FILE" "$HOME/.config/autostart/debug-panel.desktop"
+
 echo ""
 echo "✅ 安装完成！"
 echo ""
 echo "双击桌面图标 Debug Panel 启动"
 echo "或终端运行: $DEST/run.sh"
+echo "已安装到开机自启: $HOME/.config/autostart/debug-panel.desktop"
 echo ""

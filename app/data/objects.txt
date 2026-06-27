@@ -1,10 +1,80 @@
-cup,杯子,水杯
-phone,手机
-book,书,书本
-key,钥匙
-wallet,钱包
-bottle,瓶子,水瓶
-remote,遥控器
-glasses,眼镜
-watch,手表,腕表
-bag,包,背包
+person,人,行人,人員
+bicycle,自行车,脚踏车,單車,自行車,腳踏車
+car,汽车,小汽车,轿车,汽車,小汽車,轎車
+motorcycle,摩托车,机车,摩托車,機車
+airplane,飞机,飛機
+bus,公交车,巴士,公共汽车,公交車,公共汽車
+train,火车,列车,火車,列車
+truck,卡车,货车,卡車,貨車
+boat,船,小船
+traffic light,红绿灯,交通灯,信号灯,紅綠燈,交通燈,信號燈
+fire hydrant,消防栓,消火栓
+stop sign,停止牌,停止标志,停車標誌,停止標誌
+parking meter,停车计时器,停车收费表,停車計時器,停車收費表
+bench,长椅,椅子,長椅
+bird,鸟,小鸟,鳥,小鳥
+cat,猫,貓
+dog,狗
+horse,马,馬
+sheep,羊,绵羊,綿羊
+cow,牛,奶牛
+elephant,大象,象
+bear,熊
+zebra,斑马,斑馬
+giraffe,长颈鹿,長頸鹿
+backpack,背包,书包,雙肩包,書包
+umbrella,伞,雨伞,傘,雨傘
+handbag,手提包,包,包包,手袋
+tie,领带,領帶
+suitcase,行李箱,箱子,手提箱
+frisbee,飞盘,飛盤
+skis,滑雪板,雪橇
+snowboard,单板滑雪板,滑雪板,單板滑雪板
+sports ball,球,运动球,體育球,運動球
+kite,风筝,風箏
+baseball bat,棒球棒
+baseball glove,棒球手套
+skateboard,滑板
+surfboard,冲浪板,衝浪板
+tennis racket,网球拍,網球拍
+bottle,瓶子,水瓶,瓶
+wine glass,酒杯,红酒杯,葡萄酒杯,紅酒杯
+cup,杯子,水杯,杯
+fork,叉子,餐叉
+knife,刀,刀子,餐刀
+spoon,勺子,汤匙,湯匙
+bowl,碗
+banana,香蕉
+apple,苹果,蘋果
+sandwich,三明治,三文治
+orange,橙子,橘子,柳橙
+broccoli,西兰花,花椰菜,西蘭花
+carrot,胡萝卜,紅蘿蔔,胡蘿蔔
+hot dog,热狗,熱狗
+pizza,披萨,披薩
+donut,甜甜圈,甜圈
+cake,蛋糕
+chair,椅子,座椅
+couch,沙发,沙發
+potted plant,盆栽,盆栽植物
+bed,床
+dining table,餐桌,饭桌,桌子,飯桌
+toilet,马桶,厕所,馬桶,廁所
+tv,电视,电视机,電視,電視機
+laptop,笔记本电脑,笔电,手提电脑,筆記本電腦,筆電,手提電腦
+mouse,鼠标,滑鼠,鼠標
+remote,遥控器,遙控器
+keyboard,键盘,鍵盤
+cell phone,手机,电话,手機,電話
+microwave,微波炉,微波爐
+oven,烤箱,烤炉,烤爐
+toaster,吐司机,烤面包机,多士炉,吐司機,烤麵包機,多士爐
+sink,水槽,洗手池,洗碗池
+refrigerator,冰箱,雪柜,雪櫃
+book,书,书本,書,書本
+clock,钟,时钟,钟表,鐘,時鐘,鐘表
+vase,花瓶
+scissors,剪刀
+teddy bear,泰迪熊,玩具熊
+hair drier,吹风机,吹風機
+toothbrush,牙刷
